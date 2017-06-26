@@ -1,0 +1,133 @@
+Tele Mapper
+
+package assignment42(2);
+
+import java.io.IOException;
+
+import org.apache.hadoop.io.LongWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Mapper;
+
+public class TelevisionMapper extends Mapper<LongWritable, Text, Text, Text>{
+
+	Text companyName;
+	Text productName;
+	Text state;
+	Text cName;
+	public static final Text NA = new Text("NA");
+	
+	public void setup(Context context){
+		companyName = new Text();
+		productName = new Text();
+		state = new Text();
+		cName = new Text("Onida");
+	}
+	
+	public void map(LongWritable key, Text values, Context context) throws IOException, InterruptedException{
+		String[] lineArray = values.toString().split("\\|");
+		
+		companyName.set(lineArray[0]);
+		productName.set(lineArray[1]);
+		state.set(lineArray[3]);
+		
+		if(companyName.equals(cName) && !productName.equals(NA)){
+			context.write(state, companyName);
+		}
+		
+		
+	}
+
+}
+
+
+Tele Reducer
+
+
+
+package assignment42(2);
+
+import java.io.IOException;
+
+import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Reducer;
+
+public class TelevisionReducer extends Reducer<Text, Text, Text, IntWritable> {
+	
+	int count;
+	
+	public void setup(Context context) throws IOException, InterruptedException{
+		count = 0;
+		context.write(new Text("Number of Onida units sold in each state"), new IntWritable(0));
+	}
+	
+	public void reduce(Text key, Iterable<Text> values, Context context) throws IOException, InterruptedException{
+		count = 0;
+		
+		for(Text value : values)
+			count++;
+		
+		context.write(key, new IntWritable(count));
+		
+	}
+}
+
+
+Tele.java(Main Method)
+
+
+package assignment42(2);
+
+import java.io.IOException;
+
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Job;
+import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
+import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
+import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
+
+public class Television {
+
+	@SuppressWarnings("deprecation")
+	public static void main(String[] args) throws IllegalArgumentException, IOException, ClassNotFoundException, InterruptedException {
+		// TODO Auto-generated method stub
+		
+		//get configuration
+		Configuration conf = new Configuration();
+		
+		//instantiate Job(Configuration, JobName)
+		Job job = new Job(conf, "Assignment4.2_Task3");
+		
+		//Jar class to initiate the program
+		job.setJarByClass(Television.class);
+		
+		//set mapper/reducer classes
+		job.setMapperClass(TelevisionMapper.class);
+		job.setReducerClass(TelevisionReducer.class);
+		
+		//input ARGUMENTS to the program
+		FileInputFormat.addInputPath(job, new Path(args[0]));
+		FileOutputFormat.setOutputPath(job, new Path(args[1]));
+		
+		//input classes to Program
+		job.setInputFormatClass(TextInputFormat.class);
+		job.setOutputFormatClass(TextOutputFormat.class);
+		
+		//output classes of Mapper
+		job.setMapOutputKeyClass(Text.class);
+		job.setMapOutputValueClass(Text.class);
+		
+		//output classes of Reducer
+		job.setOutputKeyClass(Text.class);
+		job.setOutputValueClass(IntWritable.class);
+		
+		//Mapper Reducer Invocation
+		job.waitForCompletion(true);
+		
+	}
+
+}
