@@ -1,6 +1,6 @@
 Tele Mapper
 
-package assignment42(2);
+package ass4;
 
 import java.io.IOException;
 
@@ -44,7 +44,7 @@ Tele Reducer
 
 
 
-package assignment42(2);
+package ass4;
 
 import java.io.IOException;
 
@@ -76,7 +76,7 @@ public class TelevisionReducer extends Reducer<Text, Text, Text, IntWritable> {
 Tele.java(Main Method)
 
 
-package assignment42(2);
+package ass4;
 
 import java.io.IOException;
 
