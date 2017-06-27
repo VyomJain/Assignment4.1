@@ -91,7 +91,7 @@ public class Tele {
 		// TODO Auto-generated method stub
 		
 		Configuration conf = new Configuration();
-		Job job = new Job(conf, "Assignment4.2");
+		Job job = new Job(conf, "assignment4");
 		job.setJarByClass(Television.class);
 		
 		//set mapper reducer class
