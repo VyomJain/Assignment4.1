@@ -100,7 +100,7 @@ public class Television {
 		Configuration conf = new Configuration();
 		
 		//instantiate Job(Configuration, JobName)
-		Job job = new Job(conf, "Assignment4.2_Task3");
+		Job job = new Job(conf, "ass4");
 		
 		//Jar class to initiate the program
 		job.setJarByClass(Television.class);
